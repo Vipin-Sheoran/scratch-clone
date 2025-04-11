@@ -11,6 +11,9 @@ module.exports = merge([
       compress: true,
       port: 3000,
       historyApiFallback: true,
+      hot: true,
+      liveReload: true,
+      watchContentBase: true,
     },
   },
 ]);

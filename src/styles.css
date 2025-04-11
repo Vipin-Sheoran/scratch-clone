@@ -1,0 +1,109 @@
+/* Custom styles */
+
+/* Grid pattern for the stage background */
+.bg-grid-pattern {
+  background-image: 
+    linear-gradient(to right, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+} 
+
+/* Sprite stage styles */
+.sprite-stage {
+  position: relative;
+  overflow: hidden;
+  min-height: 300px;
+}
+
+/* Sprite container */
+.sprite-container {
+  display: inline-block;
+  transform-origin: center;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+/* Dragging state for sprites */
+.dragging .sprite-container {
+  filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.5));
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+
+/* Block dragging styles */
+.block-dragging {
+  transition: transform 0.1s ease, opacity 0.1s ease;
+}
+
+.block-dragging-to-delete {
+  filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.7)) !important;
+  opacity: 0.7 !important;
+  transform: scale(0.95) !important;
+}
+
+/* Speech bubbles */
+.speech-bubble {
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 8px 12px;
+  max-width: 150px;
+  text-align: center;
+  font-size: 0.875rem;
+  z-index: 10;
+}
+
+.speech-bubble:after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  margin-left: -10px;
+  border-width: 10px 10px 0;
+  border-style: solid;
+  border-color: white transparent;
+}
+
+.speech-bubble-think {
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 8px 12px;
+  max-width: 150px;
+  text-align: center;
+  font-size: 0.875rem;
+  z-index: 10;
+}
+
+.speech-bubble-think:before,
+.speech-bubble-think:after {
+  content: '';
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 50%;
+}
+
+.speech-bubble-think:before {
+  width: 10px;
+  height: 10px;
+  bottom: -15px;
+  left: 50%;
+  margin-left: -5px;
+}
+
+.speech-bubble-think:after {
+  width: 6px;
+  height: 6px;
+  bottom: -25px;
+  left: 50%;
+  margin-left: -3px;
+} 
