@@ -6,7 +6,7 @@ import { defaultSpriteSize } from "../constants";
 export const BallSprite = ({ size = defaultSpriteSize }) => (
   <div className={`flex items-center justify-center`}>
     <div
-      className={`rounded-full bg-gradient-to-br from-red-500 to-red-700 shadow-lg`}
+      className={`rounded-full bg-gray-500 shadow-lg`}
       style={{
         width: `${size.x}px`,
         height: `${size.y}px`,
