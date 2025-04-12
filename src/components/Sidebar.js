@@ -112,7 +112,7 @@ export default function Sidebar() {
   return (
     <div
       ref={sidebarRef}
-      className="w-60 flex-none h-full overflow-y-auto flex flex-col items-start p-2 border-r border-gray-200"
+      className="w-100 flex-none h-full overflow-y-auto flex flex-col items-start p-2 border-r border-gray-200"
       onDragOver={handleDragOver}
       onDrop={handleDrop}
       onDragEnd={handleDragEnd}

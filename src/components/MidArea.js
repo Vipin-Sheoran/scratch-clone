@@ -27,35 +27,15 @@ export default function MidArea() {
   const handleDrop = (e) => {
     e.preventDefault();
 
-    // Check if it's a new block from the sidebar
+    // Only allow dropping new blocks from the sidebar
     const blockType = e.dataTransfer.getData("blockType");
     const blockParams = JSON.parse(
       e.dataTransfer.getData("blockParams") || "{}"
     );
 
     if (blockType) {
-      // Get mouse position relative to the mid area
-      const rect = midAreaRef.current.getBoundingClientRect();
-      const position = {
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
-      };
-
-      // Add the block at the dropped position
-      addBlock(blockType, blockParams, position);
-    }
-    // If it's a block being repositioned within MidArea
-    else if (isDragging && draggedBlock) {
-      // Get mouse position relative to the mid area
-      const rect = midAreaRef.current.getBoundingClientRect();
-      const position = {
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
-      };
-
-      // Move the block to the new position
-      moveBlock(draggedBlock.id, position);
-      stopDragging();
+      // Add the block at the calculated position (will be handled by the reducer)
+      addBlock(blockType, blockParams, { x: 0, y: 0 });
     }
   };
 

@@ -4,16 +4,15 @@ import CatSprite from "./CatSprite";
 import { BallSprite, StickFigure } from "./SpriteSelector";
 import { defaultSpriteSize } from "../constants";
 
-// Sprite wrapper components
-const BallSpriteWrapper = ({
+// Single shared wrapper component
+const SpriteWrapper = ({
   id,
   isSelected,
   onClick,
   size,
-  position = { x: 0, y: 0 },
-  rotation = 0,
   text,
   textType,
+  children,
 }) => {
   const handleClick = (e) => {
     e.stopPropagation();
@@ -22,101 +21,40 @@ const BallSpriteWrapper = ({
 
   return (
     <div
-      className="sprite-container"
+      className="sprite-container relative"
       style={{
-        transform: `rotate(${rotation}deg)`,
         touchAction: "none",
       }}
     >
       {text && (
-        <div
-          className={
-            textType === "think" ? "speech-bubble-think" : "speech-bubble"
-          }
-        >
-          {text}
+        <div className="relative">
+          {/* Speech or thought bubble */}
+          <div
+            className={`absolute -top-16 left-1/2 -translate-x-1/2 bg-white border border-gray-200 rounded-lg p-2 max-w-[150px] text-center text-sm z-10`}
+          >
+            {text}
+          </div>
+
+          {/* Pointer for speech bubble */}
+          {textType !== "think" && (
+            <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[10px] border-r-[10px] border-t-[10px] border-b-0 border-l-transparent border-r-transparent border-t-white z-10"></div>
+          )}
+
+          {/* Dots for thought bubble */}
+          {textType === "think" && (
+            <>
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-3 h-3 bg-white border border-gray-200 rounded-full z-10"></div>
+              <div className="absolute -top-8 left-1/2 -translate-x-1/2 w-2 h-2 bg-white border border-gray-200 rounded-full z-10"></div>
+            </>
+          )}
         </div>
       )}
-      <div className={`w-[${size.x}px] h-[${size.y}px]`} onClick={handleClick}>
-        <BallSprite isSelected={isSelected} />
-      </div>
-    </div>
-  );
-};
-
-const StickFigureWrapper = ({
-  id,
-  isSelected,
-  onClick,
-  size,
-  position = { x: 0, y: 0 },
-  rotation = 0,
-  text,
-  textType,
-}) => {
-  const handleClick = (e) => {
-    e.stopPropagation();
-    if (onClick) onClick();
-  };
-
-  return (
-    <div
-      className="sprite-container"
-      style={{
-        transform: `rotate(${rotation}deg)`,
-        touchAction: "none",
-      }}
-    >
-      {text && (
-        <div
-          className={
-            textType === "think" ? "speech-bubble-think" : "speech-bubble"
-          }
-        >
-          {text}
-        </div>
-      )}
-      <div className={`w-[${size.x}px] h-[${size.y}px]`} onClick={handleClick}>
-        <StickFigure isSelected={isSelected} />
-      </div>
-    </div>
-  );
-};
-
-const CatSpriteWrapper = ({
-  id,
-  isSelected,
-  onClick,
-  size,
-  position = { x: 0, y: 0 },
-  rotation = 0,
-  text,
-  textType,
-}) => {
-  const handleClick = (e) => {
-    e.stopPropagation();
-    if (onClick) onClick();
-  };
-
-  return (
-    <div
-      className="sprite-container"
-      style={{
-        transform: `rotate(${rotation}deg)`,
-        touchAction: "none",
-      }}
-    >
-      {text && (
-        <div
-          className={
-            textType === "think" ? "speech-bubble-think" : "speech-bubble"
-          }
-        >
-          {text}
-        </div>
-      )}
-      <div className={`w-[${size.x}px] h-[${size.y}px]`} onClick={handleClick}>
-        <CatSprite isSelected={isSelected} />
+      <div
+        className={`relative`}
+        style={{ width: `${size.x}px`, height: `${size.y}px` }}
+        onClick={handleClick}
+      >
+        {children}
       </div>
     </div>
   );
@@ -128,53 +66,35 @@ const Sprite = ({
   onClick,
   size = defaultSpriteSize,
   id,
-  position = { x: 0, y: 0 },
-  rotation = 0,
   text,
   textType,
 }) => {
-  switch (type) {
-    case SPRITE_TYPES.BALL:
-      return (
-        <BallSpriteWrapper
-          id={id}
-          isSelected={isSelected}
-          onClick={onClick}
-          size={size}
-          position={position}
-          rotation={rotation}
-          text={text}
-          textType={textType}
-        />
-      );
-    case SPRITE_TYPES.STICK:
-      return (
-        <StickFigureWrapper
-          id={id}
-          isSelected={isSelected}
-          onClick={onClick}
-          size={size}
-          position={position}
-          rotation={rotation}
-          text={text}
-          textType={textType}
-        />
-      );
-    case SPRITE_TYPES.CAT:
-    default:
-      return (
-        <CatSpriteWrapper
-          id={id}
-          isSelected={isSelected}
-          onClick={onClick}
-          size={size}
-          position={position}
-          rotation={rotation}
-          text={text}
-          textType={textType}
-        />
-      );
-  }
+  // Choose which sprite component to render based on type
+  const getSpriteComponent = () => {
+    switch (type) {
+      case SPRITE_TYPES.BALL:
+        return <BallSprite isSelected={isSelected} />;
+      case SPRITE_TYPES.STICK:
+        return <StickFigure isSelected={isSelected} />;
+      case SPRITE_TYPES.CAT:
+      default:
+        return <CatSprite isSelected={isSelected} />;
+    }
+  };
+
+  // Use the shared wrapper with the appropriate sprite component
+  return (
+    <SpriteWrapper
+      id={id}
+      isSelected={isSelected}
+      onClick={onClick}
+      size={size}
+      text={text}
+      textType={textType}
+    >
+      {getSpriteComponent()}
+    </SpriteWrapper>
+  );
 };
 
 export default Sprite;

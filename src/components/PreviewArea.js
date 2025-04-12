@@ -219,7 +219,11 @@ export default function PreviewArea() {
       const boundedX = Math.max(-200, Math.min(newX, 200));
       const boundedY = Math.max(-200, Math.min(newY, 200));
 
-      updateSpritePosition(spriteBeingDragged, { x: boundedX, y: boundedY });
+      updateSpritePosition(
+        spriteBeingDragged,
+        { x: boundedX, y: boundedY },
+        true
+      );
     };
 
     const handleTouchMove = (e) => {
@@ -331,13 +335,18 @@ export default function PreviewArea() {
           <div
             key={sprite.id}
             ref={(el) => registerSpriteRef(sprite.id, el)}
-            className="absolute sprite-wrapper"
+            className={`absolute sprite-wrapper ${
+              isDragging && spriteBeingDragged === sprite.id
+                ? ""
+                : "transition-all ease-in-out duration-300"
+            }`}
             style={{
               left: `calc(50% + ${sprite.position.x}px)`,
               top: `calc(50% + ${sprite.position.y}px)`,
               transform: "translate(-50%, -50%)",
               zIndex: sprite.id === activeSprite ? 10 : 5,
               cursor: contextIsPlaying ? "default" : "move",
+              transform: `rotate(${sprite.rotation}deg)`,
             }}
           >
             <div
@@ -353,7 +362,6 @@ export default function PreviewArea() {
                 isSelected={sprite.id === activeSprite}
                 onClick={() => handleSpriteClick(sprite.id)}
                 position={{ x: 0, y: 0 }}
-                rotation={sprite.rotation}
                 text={sprite.text}
                 textType={sprite.textType}
               />

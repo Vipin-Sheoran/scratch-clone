@@ -7,12 +7,7 @@ export default function CatSprite({
   size = defaultSpriteSize,
 }) {
   return (
-    <div
-      onClick={onClick}
-      className={`${
-        isSelected ? "outline outline-2 outline-blue-500 rounded-full" : ""
-      }`}
-    >
+    <div onClick={onClick} className={`${isSelected ? "rounded-full" : ""}`}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="95.17898101806641"
