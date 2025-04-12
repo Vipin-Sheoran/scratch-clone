@@ -36,6 +36,7 @@ const UPDATE_SPRITE_ROTATION = "UPDATE_SPRITE_ROTATION";
 const UPDATE_SPRITE_TEXT = "UPDATE_SPRITE_TEXT";
 const CLEAR_SPRITE_TEXT = "CLEAR_SPRITE_TEXT";
 const UPDATE_SPRITE_SCRIPTS = "UPDATE_SPRITE_SCRIPTS";
+const RESET_STATE = "RESET_STATE";
 
 const generateId = () => Math.random().toString(36).substr(2, 9);
 
@@ -59,6 +60,9 @@ const initialState = {
 
 function scratchReducer(state, action) {
   switch (action.type) {
+    case RESET_STATE:
+      return initialState;
+
     case ADD_BLOCK:
       const currentScripts = state.sprites[state.activeSprite].scripts;
       const lastBlock = currentScripts[currentScripts.length - 1];
@@ -587,6 +591,14 @@ export const ScratchProvider = ({ children }) => {
     });
   };
 
+  const resetState = () => {
+    stopAnimations();
+    stopDragging();
+    dispatch({
+      type: RESET_STATE,
+    });
+  };
+
   return (
     <ScratchContext.Provider
       value={{
@@ -612,6 +624,7 @@ export const ScratchProvider = ({ children }) => {
         playAnimations,
         stopAnimations,
         updateSpriteScripts,
+        resetState,
       }}
     >
       {children}

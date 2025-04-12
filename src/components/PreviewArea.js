@@ -13,6 +13,7 @@ export default function PreviewArea() {
     stopAnimations,
     isPlaying: contextIsPlaying,
     updateSpritePosition,
+    resetState,
   } = useScratch();
   const [showSpriteSelector, setShowSpriteSelector] = useState(false);
   const stageRef = useRef(null);
@@ -39,6 +40,11 @@ export default function PreviewArea() {
     } else {
       playAnimations();
     }
+  };
+
+  const handleReset = () => {
+    stopAnimations();
+    resetState();
   };
 
   const getSpriteAtPosition = (x, y) => {
@@ -183,7 +189,13 @@ export default function PreviewArea() {
 
   return (
     <div className="flex-none h-full overflow-hidden flex flex-col w-full">
-      <div className="p-3 flex justify-end border-b border-gray-200">
+      <div className="p-3 flex justify-between border-b border-gray-200">
+        <button
+          onClick={handleReset}
+          className={`px-4 py-1.5 rounded-md bg-gray-500 text-white font-medium text-sm`}
+        >
+          Reset
+        </button>
         <button
           onClick={handlePlayClick}
           className={`px-4 py-1.5 rounded-md ${
