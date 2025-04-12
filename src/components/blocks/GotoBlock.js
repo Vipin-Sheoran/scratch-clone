@@ -7,24 +7,19 @@ const GotoBlock = ({ id, params, position, isDraggable, onParamChange }) => {
   const { updateBlock } = useScratch();
 
   const handleXChange = (x) => {
-    // Update context if it's a MidArea block
     if (id && id !== "sidebarGoto") {
       updateBlock(id, { x });
     }
 
-    // Call the onParamChange callback if provided (for sidebar)
     if (onParamChange) {
       onParamChange({ x });
     }
   };
 
   const handleYChange = (y) => {
-    // Update context if it's a MidArea block
     if (id && id !== "sidebarGoto") {
       updateBlock(id, { y });
     }
-
-    // Call the onParamChange callback if provided (for sidebar)
     if (onParamChange) {
       onParamChange({ y });
     }

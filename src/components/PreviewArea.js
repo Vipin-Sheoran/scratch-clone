@@ -16,17 +16,13 @@ export default function PreviewArea() {
   } = useScratch();
   const [showSpriteSelector, setShowSpriteSelector] = useState(false);
   const stageRef = useRef(null);
-  // Add new state for tracking drag operations
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [spriteBeingDragged, setSpriteBeingDragged] = useState(null);
-  // Add a ref to track the last clicked position to prevent double handling
   const lastClickRef = useRef({ x: 0, y: 0, time: 0, id: null });
-  // Refs to track sprite elements for hit testing
   const spriteRefs = useRef({});
 
   const handleSpriteClick = (id) => {
-    // Only change active sprite if not dragging
     if (!isDragging) {
       setActiveSprite(id);
     }
@@ -45,24 +41,16 @@ export default function PreviewArea() {
     }
   };
 
-  // Find the topmost sprite at a given position
   const getSpriteAtPosition = (x, y) => {
-    // Get stage dimensions
     if (!stageRef.current) return null;
-
-    const stageRect = stageRef.current.getBoundingClientRect();
-
-    // Check each sprite in reverse order (top to bottom in z-index)
-    const orderedSprites = getSpritesInOrder().reverse(); // Reversed to check top sprites first
+    const orderedSprites = getSpritesInOrder().reverse();
 
     for (const sprite of orderedSprites) {
-      // Skip if we don't have a ref for this sprite
       if (!spriteRefs.current[sprite.id]) continue;
 
       const spriteElement = spriteRefs.current[sprite.id];
       const spriteRect = spriteElement.getBoundingClientRect();
 
-      // Check if the point is within the sprite's bounding rectangle
       if (
         x >= spriteRect.left &&
         x <= spriteRect.right &&
@@ -76,13 +64,11 @@ export default function PreviewArea() {
     return null;
   };
 
-  // Add drag and drop handlers
   const handleSpriteMouseDown = (e, id) => {
-    if (contextIsPlaying) return; // Prevent dragging during animation playback
+    if (contextIsPlaying) return;
 
     e.stopPropagation();
 
-    // Prevent duplicate handling of the same click/touch
     const now = Date.now();
     const isSameClick =
       now - lastClickRef.current.time < 300 &&
@@ -100,29 +86,22 @@ export default function PreviewArea() {
       id: id,
     };
 
-    // Perform hit testing to find the topmost sprite at the mouse position
     const spriteIdAtPosition = getSpriteAtPosition(e.clientX, e.clientY);
 
-    // If we found a sprite and it's not the one we thought we clicked, use that one instead
     const targetSpriteId = spriteIdAtPosition || id;
 
-    // Get the sprite position
     const sprite = sprites[targetSpriteId];
     if (!sprite) return;
 
-    // Set the active sprite to the one being dragged
     setActiveSprite(targetSpriteId);
 
-    // Calculate the offset from the mouse to the sprite's actual position
     const stageRect = stageRef.current.getBoundingClientRect();
     const stageCenterX = stageRect.width / 2;
     const stageCenterY = stageRect.height / 2;
 
-    // Calculate the sprite's absolute position in the stage
     const spriteAbsoluteX = stageCenterX + sprite.position.x;
     const spriteAbsoluteY = stageCenterY + sprite.position.y;
 
-    // Calculate the offset of the click from the sprite's center
     const offsetX = e.clientX - stageRect.left - spriteAbsoluteX;
     const offsetY = e.clientY - stageRect.top - spriteAbsoluteY;
 
@@ -131,68 +110,6 @@ export default function PreviewArea() {
     setIsDragging(true);
   };
 
-  // Touch handler for mobile
-  const handleSpriteTouchStart = (e, id) => {
-    if (contextIsPlaying) return; // Prevent dragging during animation playback
-
-    e.stopPropagation();
-
-    // Get touch info
-    const touch = e.touches[0];
-
-    // Prevent duplicate handling of the same click/touch
-    const now = Date.now();
-    const isSameTouch =
-      now - lastClickRef.current.time < 300 &&
-      Math.abs(touch.clientX - lastClickRef.current.x) < 10 &&
-      Math.abs(touch.clientY - lastClickRef.current.y) < 10;
-
-    if (isSameTouch && lastClickRef.current.id === id) {
-      return;
-    }
-
-    lastClickRef.current = {
-      x: touch.clientX,
-      y: touch.clientY,
-      time: now,
-      id: id,
-    };
-
-    // Perform hit testing to find the topmost sprite at the touch position
-    const spriteIdAtPosition = getSpriteAtPosition(
-      touch.clientX,
-      touch.clientY
-    );
-
-    // If we found a sprite and it's not the one we thought we touched, use that one instead
-    const targetSpriteId = spriteIdAtPosition || id;
-
-    // Get the sprite position
-    const sprite = sprites[targetSpriteId];
-    if (!sprite) return;
-
-    // Set the active sprite to the one being dragged
-    setActiveSprite(targetSpriteId);
-
-    // Calculate the offset from the touch to the sprite's actual position
-    const stageRect = stageRef.current.getBoundingClientRect();
-    const stageCenterX = stageRect.width / 2;
-    const stageCenterY = stageRect.height / 2;
-
-    // Calculate the sprite's absolute position in the stage
-    const spriteAbsoluteX = stageCenterX + sprite.position.x;
-    const spriteAbsoluteY = stageCenterY + sprite.position.y;
-
-    // Calculate the offset of the touch from the sprite's position
-    const offsetX = touch.clientX - stageRect.left - spriteAbsoluteX;
-    const offsetY = touch.clientY - stageRect.top - spriteAbsoluteY;
-
-    setDragOffset({ x: offsetX, y: offsetY });
-    setSpriteBeingDragged(targetSpriteId);
-    setIsDragging(true);
-  };
-
-  // Register a sprite ref
   const registerSpriteRef = (id, element) => {
     if (element) {
       spriteRefs.current[id] = element;
@@ -210,12 +127,9 @@ export default function PreviewArea() {
       const stageRect = stageRef.current.getBoundingClientRect();
       const stageCenterX = stageRect.width / 2;
       const stageCenterY = stageRect.height / 2;
-
-      // Calculate new position relative to stage center
       const newX = e.clientX - stageRect.left - stageCenterX - dragOffset.x;
       const newY = e.clientY - stageRect.top - stageCenterY - dragOffset.y;
 
-      // Add boundaries to keep sprites in view
       const boundedX = Math.max(-200, Math.min(newX, 200));
       const boundedY = Math.max(-200, Math.min(newY, 200));
 
@@ -226,53 +140,17 @@ export default function PreviewArea() {
       );
     };
 
-    const handleTouchMove = (e) => {
-      if (!stageRef.current) return;
-
-      // Prevent scrolling while dragging
-      e.preventDefault();
-
-      const touch = e.touches[0];
-
-      const stageRect = stageRef.current.getBoundingClientRect();
-      const stageCenterX = stageRect.width / 2;
-      const stageCenterY = stageRect.height / 2;
-
-      // Calculate new position relative to stage center
-      const newX = touch.clientX - stageRect.left - stageCenterX - dragOffset.x;
-      const newY = touch.clientY - stageRect.top - stageCenterY - dragOffset.y;
-
-      // Add boundaries to keep sprites in view
-      const boundedX = Math.max(-200, Math.min(newX, 200));
-      const boundedY = Math.max(-200, Math.min(newY, 200));
-
-      updateSpritePosition(spriteBeingDragged, { x: boundedX, y: boundedY });
-    };
-
     const handleMouseUp = () => {
       setIsDragging(false);
       setSpriteBeingDragged(null);
     };
 
-    const handleTouchEnd = () => {
-      setIsDragging(false);
-      setSpriteBeingDragged(null);
-    };
-
-    // Add event listeners
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
-    document.addEventListener("touchmove", handleTouchMove, { passive: false });
-    document.addEventListener("touchend", handleTouchEnd);
-    document.addEventListener("touchcancel", handleTouchEnd);
 
-    // Remove event listeners on cleanup
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
-      document.removeEventListener("touchmove", handleTouchMove);
-      document.removeEventListener("touchend", handleTouchEnd);
-      document.removeEventListener("touchcancel", handleTouchEnd);
     };
   }, [
     isDragging,
@@ -282,10 +160,8 @@ export default function PreviewArea() {
     contextIsPlaying,
   ]);
 
-  // Effect to reset sprite positions when animations stop
   useEffect(() => {
     if (!contextIsPlaying && stageRef.current) {
-      // Reset any sprites that might have gone off screen
       Object.values(sprites).forEach((sprite) => {
         const { x, y } = sprite.position;
         if (Math.abs(x) > 200 || Math.abs(y) > 200) {
@@ -295,9 +171,7 @@ export default function PreviewArea() {
     }
   }, [contextIsPlaying, sprites, updateSpritePosition]);
 
-  // Function to get sprites in z-order (for proper stacking and selection)
   const getSpritesInOrder = () => {
-    // Convert to array and make activeSprite appear on top
     return Object.values(sprites).sort((a, b) => {
       if (a.id === activeSprite) return 1;
       if (b.id === activeSprite) return -1;
@@ -305,7 +179,6 @@ export default function PreviewArea() {
     });
   };
 
-  // Get sprite count
   const spriteCount = Object.keys(sprites).length;
 
   return (
@@ -321,13 +194,11 @@ export default function PreviewArea() {
         </button>
       </div>
 
-      {/* Sprite Stage Area */}
       <div
         ref={stageRef}
         className="bg-white flex-1 relative overflow-hidden sprite-stage"
         style={{ position: "relative" }}
       >
-        {/* Stage background */}
         <div className="absolute inset-0 bg-white">
           <div className="w-full h-full bg-grid-pattern opacity-10"></div>
         </div>
@@ -351,7 +222,6 @@ export default function PreviewArea() {
           >
             <div
               onMouseDown={(e) => handleSpriteMouseDown(e, sprite.id)}
-              onTouchStart={(e) => handleSpriteTouchStart(e, sprite.id)}
               className={`${
                 isDragging && spriteBeingDragged === sprite.id ? "dragging" : ""
               }`}
@@ -370,7 +240,6 @@ export default function PreviewArea() {
         ))}
       </div>
 
-      {/* Sprite Selection Area - Bottom */}
       <div className="p-3 bg-gray-50 border-t border-gray-200 h-[200px] overflow-auto">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-medium text-gray-700">Sprites</span>
@@ -402,8 +271,6 @@ export default function PreviewArea() {
               <div className="mt-1 text-xs text-center font-medium truncate w-12">
                 {sprite.name.split(" ")[0]}
               </div>
-
-              {/* Only show remove button if there's more than one sprite */}
               {spriteCount > 1 && (
                 <button
                   onClick={(e) => handleRemoveSprite(e, sprite.id)}
@@ -417,8 +284,6 @@ export default function PreviewArea() {
           ))}
         </div>
       </div>
-
-      {/* Sprite Selector Modal */}
       {showSpriteSelector && (
         <SpriteSelector onClose={() => setShowSpriteSelector(false)} />
       )}

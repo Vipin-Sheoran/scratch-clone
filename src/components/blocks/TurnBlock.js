@@ -14,12 +14,9 @@ export const TurnLeftBlock = ({
   const { updateBlock } = useScratch();
 
   const handleDegreesChange = (degrees) => {
-    // Update context if it's a MidArea block
     if (id && id !== "sidebarTurnLeft") {
       updateBlock(id, { degrees });
     }
-
-    // Call the onParamChange callback if provided (for sidebar)
     if (onParamChange) {
       onParamChange({ degrees });
     }
@@ -56,12 +53,10 @@ export const TurnRightBlock = ({
   const { updateBlock } = useScratch();
 
   const handleDegreesChange = (degrees) => {
-    // Update context if it's a MidArea block
     if (id && id !== "sidebarTurnRight") {
       updateBlock(id, { degrees });
     }
 
-    // Call the onParamChange callback if provided (for sidebar)
     if (onParamChange) {
       onParamChange({ degrees });
     }

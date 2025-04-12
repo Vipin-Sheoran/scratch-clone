@@ -7,12 +7,10 @@ const MoveBlock = ({ id, params, position, isDraggable, onParamChange }) => {
   const { updateBlock } = useScratch();
 
   const handleStepsChange = (steps) => {
-    // Update context if it's a MidArea block
     if (id && id !== "sidebarMove") {
       updateBlock(id, { steps });
     }
 
-    // Call the onParamChange callback if provided (for sidebar)
     if (onParamChange) {
       onParamChange({ steps });
     }

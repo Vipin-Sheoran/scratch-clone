@@ -14,12 +14,9 @@ const RepeatBlock = ({
   const { updateBlock } = useScratch();
 
   const handleCountChange = (count) => {
-    // Update context if it's a MidArea block
     if (id && id !== "sidebarRepeat") {
       updateBlock(id, { count });
     }
-
-    // Call the onParamChange callback if provided (for sidebar)
     if (onParamChange) {
       onParamChange({ count });
     }
@@ -45,7 +42,6 @@ const RepeatBlock = ({
         <span>times</span>
       </Block>
 
-      {/* Container for blocks inside the repeat */}
       <div className="ml-8 border-l-2 border-yellow-600 pl-4 mt-1">
         {children}
       </div>

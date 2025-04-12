@@ -2,7 +2,7 @@ import React from "react";
 import CatSprite from "./CatSprite";
 import { useScratch, SPRITE_TYPES } from "../context/ScratchContext";
 import { defaultSpriteSize } from "../constants";
-// Additional sprites
+
 export const BallSprite = ({ size = defaultSpriteSize }) => (
   <div className={`flex items-center justify-center`}>
     <div

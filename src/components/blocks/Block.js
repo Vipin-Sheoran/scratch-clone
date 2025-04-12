@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useScratch, BLOCK_TYPES } from "../../context/ScratchContext";
 
-// Base Block component
 const Block = ({
   id,
   type,
@@ -13,24 +12,15 @@ const Block = ({
   isSnapZone = false,
   onSnap,
 }) => {
-  const {
-    updateBlock,
-    moveBlock,
-    deleteBlock,
-    isDragging,
-    draggedBlock,
-    startDragging,
-    stopDragging,
-  } = useScratch();
+  const { deleteBlock, isDragging, draggedBlock, startDragging, stopDragging } =
+    useScratch();
 
   const [showSnapZone, setShowSnapZone] = useState(false);
   const blockRef = useRef(null);
-  const [isEditing, setIsEditing] = useState(false);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [isDraggingToDelete, setIsDraggingToDelete] = useState(false);
   const [hasMoved, setHasMoved] = useState(false);
 
-  // Handle drag start
   const handleDragStart = (e) => {
     if (!isDraggable) return;
 
@@ -43,16 +33,12 @@ const Block = ({
     startDragging({ id, type, params });
     setHasMoved(false);
     e.stopPropagation();
-
-    // Store the current element ID in the dataTransfer to reference it on drop
     e.dataTransfer.setData("blockId", id);
   };
 
-  // Handle drag end to catch releases outside valid drop zones
   const handleDragEnd = (e) => {
     if (!isDraggable) return;
 
-    // Check if we're near the sidebar
     if (isDraggingToDelete) {
       console.log("Block dragend detected, deleting:", id);
       deleteBlock(id);
@@ -62,7 +48,6 @@ const Block = ({
     stopDragging();
   };
 
-  // Handle drag over for snap zones
   const handleDragOver = (e) => {
     e.preventDefault();
     if (isDragging && isSnapZone) {
@@ -70,12 +55,10 @@ const Block = ({
     }
   };
 
-  // Handle drag leave for snap zones
   const handleDragLeave = () => {
     setShowSnapZone(false);
   };
 
-  // Handle drop for snap zones
   const handleDrop = (e) => {
     e.preventDefault();
     if (isDragging && isSnapZone && onSnap && draggedBlock) {
@@ -85,7 +68,6 @@ const Block = ({
     setShowSnapZone(false);
   };
 
-  // Monitor for dragging toward sidebar to delete
   useEffect(() => {
     if (!isDraggable || !isDragging || !draggedBlock || draggedBlock.id !== id)
       return;
@@ -98,7 +80,6 @@ const Block = ({
         if (midAreaElem) {
           const midAreaRect = midAreaElem.getBoundingClientRect();
 
-          // Check if dragging toward the sidebar (left side)
           if (e.clientX < midAreaRect.left + 100) {
             setIsDraggingToDelete(true);
           } else {
@@ -117,7 +98,6 @@ const Block = ({
         if (midAreaElem) {
           const midAreaRect = midAreaElem.getBoundingClientRect();
 
-          // Check if dragging toward the sidebar (left side)
           if (touch.clientX < midAreaRect.left + 100) {
             setIsDraggingToDelete(true);
           } else {
@@ -127,18 +107,15 @@ const Block = ({
       }
     };
 
-    // Add the listeners
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("touchmove", handleTouchMove);
 
-    // Clean up
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("touchmove", handleTouchMove);
     };
   }, [isDragging, draggedBlock, id, isDraggable]);
 
-  // Get background color based on block type
   const getBackgroundColor = () => {
     switch (type) {
       case BLOCK_TYPES.MOVE:
@@ -190,8 +167,6 @@ const Block = ({
       onDrop={handleDrop}
     >
       {children}
-
-      {/* Snap zone indicator */}
       {showSnapZone && (
         <div className="absolute inset-0 border-2 border-yellow-300 rounded-md pointer-events-none" />
       )}

@@ -12,7 +12,6 @@ export default function Sidebar() {
     useScratch();
   const sidebarRef = useRef(null);
 
-  // Add state to track custom values for blocks
   const [sayBlockParams, setSayBlockParams] = useState({
     text: "Hello!",
     duration: 2,
@@ -33,65 +32,51 @@ export default function Sidebar() {
     e.dataTransfer.effectAllowed = "copy";
   };
 
-  // Handler for updating the say block parameters
   const handleSayBlockUpdate = (newParams) => {
     setSayBlockParams((prev) => ({ ...prev, ...newParams }));
   };
 
-  // Handler for updating the think block parameters
   const handleThinkBlockUpdate = (newParams) => {
     setThinkBlockParams((prev) => ({ ...prev, ...newParams }));
   };
 
-  // Handler for updating move block parameters
   const handleMoveBlockUpdate = (newParams) => {
     setMoveBlockParams((prev) => ({ ...prev, ...newParams }));
   };
 
-  // Handler for updating turn left parameters
   const handleTurnLeftUpdate = (newParams) => {
     setTurnLeftParams((prev) => ({ ...prev, ...newParams }));
   };
 
-  // Handler for updating turn right parameters
   const handleTurnRightUpdate = (newParams) => {
     setTurnRightParams((prev) => ({ ...prev, ...newParams }));
   };
 
-  // Handler for updating goto parameters
   const handleGotoUpdate = (newParams) => {
     setGotoParams((prev) => ({ ...prev, ...newParams }));
   };
 
-  // Handler for updating repeat parameters
   const handleRepeatUpdate = (newParams) => {
     setRepeatParams((prev) => ({ ...prev, ...newParams }));
   };
 
-  // Handle drag over for the sidebar
   const handleDragOver = (e) => {
-    // Only accept drag over if we have a dragged block from MidArea
     if (isDragging && draggedBlock) {
       e.preventDefault();
       e.dataTransfer.dropEffect = "move";
     }
   };
 
-  // Handle drop for the sidebar
   const handleDrop = (e) => {
     e.preventDefault();
 
-    // Check if we're dropping a block from the MidArea
     if (isDragging && draggedBlock) {
-      console.log("Block dropped in sidebar, deleting:", draggedBlock.id);
       deleteBlock(draggedBlock.id);
       stopDragging();
     }
   };
 
-  // Handle drag end event
   const handleDragEnd = (e) => {
-    // Check if the drag ended over the sidebar element
     if (sidebarRef.current && isDragging && draggedBlock) {
       const rect = sidebarRef.current.getBoundingClientRect();
 
@@ -101,7 +86,6 @@ export default function Sidebar() {
         e.clientY >= rect.top &&
         e.clientY <= rect.bottom
       ) {
-        console.log("Drag ended over sidebar, deleting:", draggedBlock.id);
         deleteBlock(draggedBlock.id);
       }
 

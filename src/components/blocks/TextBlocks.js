@@ -14,24 +14,20 @@ export const SayBlock = ({
   const { updateBlock } = useScratch();
 
   const handleTextChange = (text) => {
-    // Update context if it's a MidArea block
     if (id && id !== "sidebarSay") {
       updateBlock(id, { text });
     }
 
-    // Call the onParamChange callback if provided (for sidebar)
     if (onParamChange) {
       onParamChange({ text });
     }
   };
 
   const handleDurationChange = (duration) => {
-    // Update context if it's a MidArea block
     if (id && id !== "sidebarSay") {
       updateBlock(id, { duration });
     }
 
-    // Call the onParamChange callback if provided (for sidebar)
     if (onParamChange) {
       onParamChange({ duration });
     }
@@ -75,24 +71,20 @@ export const ThinkBlock = ({
   const { updateBlock } = useScratch();
 
   const handleTextChange = (text) => {
-    // Update context if it's a MidArea block
     if (id && id !== "sidebarThink") {
       updateBlock(id, { text });
     }
 
-    // Call the onParamChange callback if provided (for sidebar)
     if (onParamChange) {
       onParamChange({ text });
     }
   };
 
   const handleDurationChange = (duration) => {
-    // Update context if it's a MidArea block
     if (id && id !== "sidebarThink") {
       updateBlock(id, { duration });
     }
 
-    // Call the onParamChange callback if provided (for sidebar)
     if (onParamChange) {
       onParamChange({ duration });
     }

@@ -4,7 +4,6 @@ import CatSprite from "./CatSprite";
 import { BallSprite, StickFigure } from "./SpriteSelector";
 import { defaultSpriteSize } from "../constants";
 
-// Single shared wrapper component
 const SpriteWrapper = ({
   id,
   isSelected,
@@ -28,19 +27,16 @@ const SpriteWrapper = ({
     >
       {text && (
         <div className="relative">
-          {/* Speech or thought bubble */}
           <div
             className={`absolute -top-16 left-1/2 -translate-x-1/2 bg-white border border-gray-200 rounded-lg p-2 max-w-[150px] text-center text-sm z-10`}
           >
             {text}
           </div>
 
-          {/* Pointer for speech bubble */}
           {textType !== "think" && (
             <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[10px] border-r-[10px] border-t-[10px] border-b-0 border-l-transparent border-r-transparent border-t-white z-10"></div>
           )}
 
-          {/* Dots for thought bubble */}
           {textType === "think" && (
             <>
               <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-3 h-3 bg-white border border-gray-200 rounded-full z-10"></div>
@@ -69,7 +65,6 @@ const Sprite = ({
   text,
   textType,
 }) => {
-  // Choose which sprite component to render based on type
   const getSpriteComponent = () => {
     switch (type) {
       case SPRITE_TYPES.BALL:
@@ -82,7 +77,6 @@ const Sprite = ({
     }
   };
 
-  // Use the shared wrapper with the appropriate sprite component
   return (
     <SpriteWrapper
       id={id}

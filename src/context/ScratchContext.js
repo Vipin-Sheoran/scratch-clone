@@ -61,11 +61,10 @@ function scratchReducer(state, action) {
   switch (action.type) {
     case ADD_BLOCK:
       const currentScripts = state.sprites[state.activeSprite].scripts;
-      // Calculate the new block's position - place it at the bottom of the list
       const lastBlock = currentScripts[currentScripts.length - 1];
       const newPosition = {
-        x: 50, // Fixed x position for vertical list
-        y: lastBlock ? lastBlock.position.y + 60 : 50, // 60px spacing between blocks
+        x: 50,
+        y: lastBlock ? lastBlock.position.y + 60 : 50,
       };
 
       return {
@@ -132,14 +131,13 @@ function scratchReducer(state, action) {
 
       if (deletedBlockIndex === -1) return state;
 
-      // Recalculate positions for blocks after the deleted one
       const updatedScripts = spriteScripts
         .filter((block) => block.id !== action.payload.id)
         .map((block, index) => ({
           ...block,
           position: {
-            x: 50, // Fixed x position
-            y: 50 + index * 60, // 60px spacing between blocks
+            x: 50,
+            y: 50 + index * 60,
           },
         }));
 
@@ -292,12 +290,11 @@ export const ScratchProvider = ({ children }) => {
       const dy = sprite1.position.y - sprite2.position.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
 
-      return distance < 40; // Collision threshold
+      return distance < 40;
     };
     let collisionOccurred = [];
     let collidedSprites = [];
 
-    // Function to execute a script for a specific sprite
     const executeScript = async (sprite, script, sprites, noEffect = false) => {
       if (!script || (collisionOccurred.includes(sprite.id) && !noEffect))
         return;
@@ -318,21 +315,19 @@ export const ScratchProvider = ({ children }) => {
             const steps = script.params.steps || 10;
             const angleRad = (sprite.rotation * Math.PI) / 180;
 
-            // Calculate new position
             let newX = sprite.position.x + steps * Math.cos(angleRad);
             let newY = sprite.position.y + steps * Math.sin(angleRad);
             sprite.position.x = newX;
             sprite.position.y = newY;
-            // Add boundaries to keep sprites in view (prevent them from going offscreen)
             updateSpritePosition(sprite.id, { x: newX, y: newY }, true);
-            setTimeout(resolve, 0); // Short delay for animation
+            setTimeout(resolve, 0);
             break;
           }
           case BLOCK_TYPES.TURN_LEFT: {
             const degrees = sprite.rotation - (script.params.degrees || 15);
             sprite.rotation = degrees;
             updateSpriteRotation(sprite.id, degrees);
-            setTimeout(resolve, 0); // Short delay for animation
+            setTimeout(resolve, 0);
             break;
           }
           case BLOCK_TYPES.TURN_RIGHT: {
@@ -340,19 +335,18 @@ export const ScratchProvider = ({ children }) => {
             const degrees = sprite.rotation + (script.params.degrees || 15);
             sprite.rotation = degrees;
             updateSpriteRotation(sprite.id, degrees);
-            setTimeout(resolve, 0); // Short delay for animation
+            setTimeout(resolve, 0);
             break;
           }
           case BLOCK_TYPES.GOTO: {
             const x = script.params.x || 0;
             const y = script.params.y || 0;
 
-            // Add boundaries to keep sprites in view
             const boundedX = Math.max(-200, Math.min(x, 200));
             const boundedY = Math.max(-200, Math.min(y, 200));
 
             updateSpritePosition(sprite.id, { x: boundedX, y: boundedY }, true);
-            setTimeout(resolve, 0); // Short delay for animation
+            setTimeout(resolve, 0);
             break;
           }
           case BLOCK_TYPES.SAY: {
@@ -361,12 +355,11 @@ export const ScratchProvider = ({ children }) => {
 
             updateSpriteText(sprite.id, text, "say");
 
-            // Resolve the promise after the full duration
             setTimeout(() => {
               if (isPlaying) {
                 clearSpriteText(sprite.id);
               }
-              resolve(); // Only resolve after the full duration
+              resolve();
             }, duration * 1000);
 
             break;
@@ -377,23 +370,21 @@ export const ScratchProvider = ({ children }) => {
 
             updateSpriteText(sprite.id, text, "think");
 
-            // Resolve the promise after the full duration
             setTimeout(() => {
               if (isPlaying) {
                 clearSpriteText(sprite.id);
               }
-              resolve(); // Only resolve after the full duration
+              resolve();
             }, duration * 1000);
 
             break;
           }
           default:
-            resolve(); // Immediately resolve for unknown script types
+            resolve();
         }
       });
     };
 
-    // Get a copy of the current sprites state for this animation cycle
     const currentSprites = { ...state.sprites };
     const runLoopForScriptExecution = async (
       sprite,
@@ -407,7 +398,6 @@ export const ScratchProvider = ({ children }) => {
           sortedScripts[index + 1] &&
           sortedScripts[index + 1].type === BLOCK_TYPES.REPEAT
         ) {
-          // Handle repeat blocks
           const repeatCount = sortedScripts[index + 1].params.count;
           for (let i = 0; i < repeatCount; i++) {
             await executeScript(
@@ -429,11 +419,9 @@ export const ScratchProvider = ({ children }) => {
         }
       }
     };
-    // Process animation for all sprites
     const spritePromises = Object.values(currentSprites).map(async (sprite) => {
       if (!sprite.scripts || sprite.scripts.length === 0) return;
 
-      // Sort scripts by their y position to determine execution order
       const sortedScripts = [...sprite.scripts].sort(
         (a, b) => (a.position?.y || 0) - (b.position?.y || 0)
       );
@@ -444,7 +432,6 @@ export const ScratchProvider = ({ children }) => {
     if (collisionOccurred.length > 0 && collidedSprites.length === 2) {
       const [sprite1, sprite2] = collidedSprites;
 
-      // Swap the scripts between the two sprites
       const tempScripts = sprite1.scripts;
       updateSpriteScripts(sprite1.id, sprite2.scripts);
       updateSpriteScripts(sprite2.id, tempScripts);
@@ -456,20 +443,17 @@ export const ScratchProvider = ({ children }) => {
     }
     setIsPlaying(false);
   };
-  // Animation loop
+
   useEffect(() => {
     executionLogic();
-    // Move to next animation step after a delay
     const timerId = setTimeout(() => {
-      // Check if we've reached the end of animation for any sprite
       const maxScriptLength = Math.max(
         ...Object.values(state.sprites).map(
           (sprite) => sprite.scripts?.length || 0
         ),
-        0 // Default value in case there are no scripts
+        0
       );
 
-      // If there are no scripts at all, or we've reached the end, stop playing
       if (maxScriptLength === 0) {
         setIsPlaying(false);
         setAnimationStep(0);
@@ -477,10 +461,8 @@ export const ScratchProvider = ({ children }) => {
       }
 
       if (animationStep >= maxScriptLength - 1) {
-        // Reset animation step after all blocks have been executed
         setAnimationStep(0);
 
-        // Set a maximum number of loops to prevent infinite running
         if (maxLoopsRef.current >= 10) {
           setIsPlaying(false);
           maxLoopsRef.current = 0;
@@ -498,7 +480,7 @@ export const ScratchProvider = ({ children }) => {
   useEffect(() => {
     console.log("state.sprites", state.sprites);
   }, [isPlaying, state.sprites]);
-  // Action creators
+
   const addBlock = (type, params, position) => {
     dispatch({
       type: ADD_BLOCK,

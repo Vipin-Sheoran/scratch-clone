@@ -6,9 +6,7 @@ export default function MidArea() {
   const {
     activeScripts,
     addBlock,
-    moveBlock,
     deleteBlock,
-    activeSprite,
     isDragging,
     draggedBlock,
     stopDragging,
@@ -27,35 +25,28 @@ export default function MidArea() {
   const handleDrop = (e) => {
     e.preventDefault();
 
-    // Only allow dropping new blocks from the sidebar
     const blockType = e.dataTransfer.getData("blockType");
     const blockParams = JSON.parse(
       e.dataTransfer.getData("blockParams") || "{}"
     );
 
     if (blockType) {
-      // Add the block at the calculated position (will be handled by the reducer)
       addBlock(blockType, blockParams, { x: 0, y: 0 });
     }
   };
 
-  // Set up a global drop handler to catch drops outside the MidArea
   useEffect(() => {
     const handleGlobalDrop = (e) => {
-      // If we have a block being dragged and we're outside MidArea
       if (isDragging && draggedBlock && isDraggedOutside) {
-        // Check if the drop occurred to the left of MidArea (in sidebar area)
         if (midAreaRef.current) {
           const rect = midAreaRef.current.getBoundingClientRect();
           if (e.clientX < rect.left) {
-            // Delete the block
             console.log("Deleting block:", draggedBlock.id);
             deleteBlock(draggedBlock.id);
           }
         }
       }
 
-      // Reset drag state
       setIsDraggedOutside(false);
       setIsDraggingBlock(false);
       setBlockBeingDragged(null);
@@ -68,12 +59,10 @@ export default function MidArea() {
     };
   }, [isDragging, draggedBlock, isDraggedOutside, deleteBlock]);
 
-  // Handle drag events for detecting when blocks are dragged to the sidebar
   useEffect(() => {
     if (!isDragging || !draggedBlock) return;
 
     const handleMouseMove = (e) => {
-      // Check if mouse is outside the MidArea
       if (midAreaRef.current) {
         const rect = midAreaRef.current.getBoundingClientRect();
         const isOutside =
@@ -82,7 +71,6 @@ export default function MidArea() {
           e.clientY < rect.top ||
           e.clientY > rect.bottom;
 
-        // If outside and over the sidebar (left side), set as dragging to sidebar
         if (isOutside && e.clientX < rect.left) {
           setIsDraggingBlock(true);
           setBlockBeingDragged(draggedBlock.id);
@@ -99,7 +87,6 @@ export default function MidArea() {
     };
 
     const handleTouchMove = (e) => {
-      // Prevent scrolling while dragging
       e.preventDefault();
 
       if (e.touches && e.touches[0] && midAreaRef.current) {
@@ -112,7 +99,6 @@ export default function MidArea() {
           touch.clientY < rect.top ||
           touch.clientY > rect.bottom;
 
-        // If outside and over the sidebar (left side), set as dragging to sidebar
         if (isOutside && touch.clientX < rect.left) {
           setIsDraggingBlock(true);
           setBlockBeingDragged(draggedBlock.id);
@@ -137,17 +123,14 @@ export default function MidArea() {
       );
 
       if (isDraggingBlock && blockBeingDragged) {
-        // Check if mouse was released over the sidebar (left side)
         if (midAreaRef.current) {
           const rect = midAreaRef.current.getBoundingClientRect();
           if (e.clientX < rect.left) {
-            // Delete the block when dropped in the sidebar
             console.log("Delete detected at handleMouseUp");
             deleteBlock(blockBeingDragged);
           }
         }
       } else if (isDraggedOutside && draggedBlock) {
-        // If we're outside but not in sidebar, check if we should delete
         if (midAreaRef.current) {
           const rect = midAreaRef.current.getBoundingClientRect();
           if (e.clientX < rect.left) {
@@ -168,7 +151,6 @@ export default function MidArea() {
         (isDraggingBlock && blockBeingDragged) ||
         (isDraggedOutside && draggedBlock)
       ) {
-        // For touch events, we need to check the last known position
         if (midAreaRef.current) {
           if (isDraggingBlock && blockBeingDragged) {
             console.log("Delete detected at handleTouchEnd");
@@ -186,14 +168,12 @@ export default function MidArea() {
       stopDragging();
     };
 
-    // Add event listeners
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
     document.addEventListener("touchmove", handleTouchMove, { passive: false });
     document.addEventListener("touchend", handleTouchEnd);
     document.addEventListener("touchcancel", handleTouchEnd);
 
-    // Clean up
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
@@ -211,12 +191,10 @@ export default function MidArea() {
     isDraggedOutside,
   ]);
 
-  // Add a direct handler for the dragend event on the MidArea
   const handleDragEnd = (e) => {
     if (isDragging && draggedBlock && midAreaRef.current) {
       const rect = midAreaRef.current.getBoundingClientRect();
 
-      // Check if the drag ended outside or to the left of MidArea
       if (e.clientX < rect.left) {
         console.log("Delete detected at handleDragEnd");
         deleteBlock(draggedBlock.id);
@@ -232,7 +210,6 @@ export default function MidArea() {
       onDrop={handleDrop}
       onDragEnd={handleDragEnd}
     >
-      {/* Display the active sprite's scripts */}
       {activeScripts.map((block) => (
         <BlockFactory key={block.id} block={block} />
       ))}
